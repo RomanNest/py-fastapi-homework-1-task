@@ -27,23 +27,11 @@ async def get_movies(
         raise HTTPException(status_code=404, detail="No movies found.")
     total_movies = await db.scalar(
         select(func.count(MovieModel.id)).select_from(MovieModel)
-        )
+    )
     total_pages = ceil(total_movies / per_page)
 
     if not total_movies:
         raise HTTPException(status_code=404, detail="No movies found.")
-
-    # if page < 1 or per_page < 1 or per_page > 20:
-    #     raise HTTPException(
-    #         status_code=422,
-    #         detail=[
-    #             {
-    #                 "loc": ["query", "page"],
-    #                 "msg": "ensure this value is greater than or equal to 1",
-    #                 "type": "value_error.number.not_ge"
-    #             }
-    #         ]
-    #     )
 
     return {
         "movies": [MovieDetailResponseSchema.from_orm(movie) for movie in movies],
