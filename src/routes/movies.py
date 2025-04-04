@@ -12,7 +12,7 @@ from src.database.session import get_db
 router = APIRouter()
 
 
-@router.get("/movies", response_model=MovieListResponseSchema)
+@router.get("/movies/", response_model=MovieListResponseSchema)
 async def get_movies(
         page: int = Query(1, ge=1),
         per_page: int = Query(10, ge=1, le=20),
@@ -26,7 +26,7 @@ async def get_movies(
     if not movies:
         raise HTTPException(status_code=404, detail="No movies found.")
     total_movies = await db.scalar(
-        select(func.count(MovieModel.id)).select_from(MovieModel)
+        select(func.count(MovieModel.id))
     )
     total_pages = ceil(total_movies / per_page)
 
@@ -48,7 +48,7 @@ async def get_movies(
     }
 
 
-@router.get("/movies/{movie_id}", response_model=MovieDetailResponseSchema)
+@router.get("/movies/{movie_id}/", response_model=MovieDetailResponseSchema)
 async def get_movie_detail(movie_id: int, db: AsyncSession = Depends(get_db)):
     result = await (
         db.execute(select(MovieModel).where(MovieModel.id == movie_id))
